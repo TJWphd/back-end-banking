@@ -31,26 +31,24 @@ router.post("/", (req, res) => {
 
 router.put("/:id", (req, res) => {
   // update a tag's name by its `id` value
-  Tag.update(
-    {
-      // all fields here
+  Tag.update(req.body, {
+    where: {
+      id: req.params.id,
     },
-    {
-      where: {
-        tag_id: req.params.tag_id,
-      },
-    }
-  )
+  })
     .then((updatedTag) => {
       res.json(updatedTag);
     })
-    .catch((err) => res.json(err));
+    .catch((err) => {
+      console.log(err);
+      res.json(err);
+    });
 });
 
 router.delete("/:id", (req, res) => {
   Tag.destroy({
     where: {
-      tag_id: req.params.tag_id,
+      id: req.params.id,
     },
   })
     .then((deletedTag) => {

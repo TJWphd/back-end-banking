@@ -15,6 +15,7 @@ router.get("/", (req, res) => {
 // get one product
 router.get("/:id", (req, res) => {
   Product.findOne({
+    where: { id: req.params.id },
     include: [Category, Tag],
   }).then((product) => {
     res.json(product);
@@ -23,29 +24,20 @@ router.get("/:id", (req, res) => {
 
 // create new product
 router.post("/", (req, res) => {
-  /* req.body should look like this...
-    {
-      product_name: "Basketball",
-      price: 200.00,
-      stock: 3,
-      tagIds: [1, 2, 3, 4]
+  Product.then((product) => {
+    // if there's product tags, this creates pairings to bulk create in the ProductTag model
+    if (req.body.tagIds.length) {
+      const productTagIdArr = req.body.tagIds.map((tag_id) => {
+        return {
+          product_id: product.id,
+          tag_id,
+        };
+      });
+      return ProductTag.bulkCreate(productTagIdArr);
     }
-  */
-  Product.create(req.body)
-    .then((product) => {
-      // if there's product tags, this creates pairings to bulk create in the ProductTag model
-      if (req.body.tagIds.length) {
-        const productTagIdArr = req.body.tagIds.map((tag_id) => {
-          return {
-            product_id: product.id,
-            tag_id,
-          };
-        });
-        return ProductTag.bulkCreate(productTagIdArr);
-      }
-      // if no product tags, just responds
-      res.status(200).json(product);
-    })
+    // if no product tags, just responds
+    res.status(200).json(product);
+  })
     .then((productTagIds) => res.status(200).json(productTagIds))
     .catch((err) => {
       console.log(err);
@@ -94,13 +86,16 @@ router.put("/:id", (req, res) => {
 router.delete("/:id", (req, res) => {
   Product.destroy({
     where: {
-      product_id: req.params.product_id,
+      id: req.params.id,
     },
   })
     .then((deletedProduct) => {
       res.json(deletedProduct);
     })
-    .catch((err) => res.json(err));
+    .catch((err) => {
+      console.log(err);
+      res.json(err);
+    });
 });
 
 module.exports = router;
