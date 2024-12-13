@@ -13,6 +13,7 @@ router.get("/", (req, res) => {
 
 router.get("/:id", (req, res) => {
   Category.findOne({
+    where: { id: req.params.id },
     include: [Product],
   }).then((category) => {
     res.json(category);
@@ -31,25 +32,21 @@ router.post("/", (req, res) => {
 
 router.put("/:id", (req, res) => {
   // update a category by its `id` value
-  Category.update({
-    // all fields here
-  }
-{
-  where: {
-    category_id: req.params.category_id,
-  },
-}
-);
-.then((updatedCategory) => {
-  res.json(updatedCategory);
-})
-.catch((err) => res.json(err));
+  Category.update(req.body, {
+    where: {
+      id: req.params.id,
+    },
+  })
+    .then((updatedCategory) => {
+      res.json(updatedCategory);
+    })
+    .catch((err) => res.json(err));
 });
 
 router.delete("/:id", (req, res) => {
   Category.destroy({
     where: {
-      category_id: req.params.category_id,
+      id: req.params.id,
     },
   })
     .then((deletedCategory) => {

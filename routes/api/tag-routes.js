@@ -31,19 +31,20 @@ router.post("/", (req, res) => {
 
 router.put("/:id", (req, res) => {
   // update a tag's name by its `id` value
-  Tag.update({
-    // all fields here
-  }
-{
-  where: {
-    tag_id: req.params.tag_id,
-  },
-}
-);
-.then((updatedTag) => {
-  res.json(updatedTag);
-})
-.catch((err) => res.json(err));
+  Tag.update(
+    {
+      // all fields here
+    },
+    {
+      where: {
+        tag_id: req.params.tag_id,
+      },
+    }
+  )
+    .then((updatedTag) => {
+      res.json(updatedTag);
+    })
+    .catch((err) => res.json(err));
 });
 
 router.delete("/:id", (req, res) => {
